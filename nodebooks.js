@@ -28,9 +28,11 @@ function showPeeks(){
     var script_line_index = display_call.loc.end.line - 1
     var associated_peek = '````\n\nValue is: ' + JSON.stringify(peeks[i]) + '\n\n' // insert transformation step, simply stringify for now
     
+    // Some quick and dirty markdown formatting that would need to be improved to handle more use cases
     if (i < display_calls.length - 1) {
       associated_peek += '````js'
     }
+    
     script_lines.splice(script_line_index + 1, 0, associated_peek)
   }
 
@@ -42,6 +44,4 @@ function keepTrack(obj) {
   showPeeks_after()
 }
 
-module.exports = function(obj){
-  keepTrack(obj)
-}
+module.exports = keepTrack

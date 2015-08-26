@@ -2,13 +2,14 @@
 
 var fs = require('fs')
 var nodebooks = require('../nodebooks')
+var formats = require('../formats')
 
 var file = process.argv[2]
 console.log( file )
 
 function formatPeek ( peek ) {
   return peek.results.map( function ( result, i ) {
-    return ( peek.results.length > 1 ? '[' + i + ']: ' : '' ) + JSON.stringify( result )
+    return ( peek.results.length > 1 ? '[' + i + ']: ' : '' ) + formats[peek.format]( result )
   }).join( '\n' ) + '\n\n';
 }
 
@@ -17,6 +18,7 @@ function formatCode ( code ) {
 }
 
 var code = fs.readFileSync(file, 'utf-8')
+
 nodebooks.run(code, function (result) {
   var lines = code.split('\n');
   var peeks = []

@@ -30,26 +30,18 @@ module.exports = {
     // monkey patch async stuff. TODO literally everything else besides setTimeout
     var pending = 0;
 
-    var setTimeout = global.setTimeout;
-    global.setTimeout = function ( fn, delay ) {
-      pending += 1;
-      return setTimeout( function () {
-        fn();
-        if ( !--pending ) callback( result );
-      }, delay );
-    }
-
-    var result = '';
-
-    global.display = function ( uid, data ) {
-      display_calls[ uid ].results.push(data);
-    };
-
     var context = vm.createContext({
       display: function ( uid, data ) {
         display_calls[ uid ].results.push(data);
       },
-      require: require
+      require: require,
+      setTimeout: function ( fn, delay ) {
+        pending += 1;
+        return setTimeout( function () {
+          fn();
+          if ( !--pending ) callback( display_calls );
+        }, delay );
+      }
     });
 
     vm.runInContext(magicString.toString(), context)

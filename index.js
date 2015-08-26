@@ -10,3 +10,7 @@ display(numbs)
 numbs.forEach(function (num) {
 	display(num*num);
 });
+
+setTimeout( function () {
+	display('it works!');
+}, 1000 );

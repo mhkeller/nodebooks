@@ -46,7 +46,7 @@ module.exports = {
         if (format) {
           display_calls[ uid ].format = format;
         }
-        display_calls[ uid ].results.push(data);
+        display_calls[ uid ].results.push(JSON.stringify(data));
       },
       setTimeout: function ( fn, delay ) {
         pending += 1;

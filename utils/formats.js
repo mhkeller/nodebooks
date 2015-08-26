@@ -34,7 +34,7 @@ helpers.chartBy = function(conf) {
 
 exports.js = function(result, pageFormat){
   var block = pageFormat.peek.open
-  block += JSON.stringify(result, null, 2)
+  block += JSON.stringify(JSON.parse(result), null, 2)
             .replace(/\n/g, pageFormat.br)
             .replace(/ /g, pageFormat.whitespace)
 

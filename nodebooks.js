@@ -4,6 +4,7 @@ var fs = require('fs')
 var MagicString = require('magic-string')
 var walk = require('estree-walker').walk
 var vm = require('vm')
+var createContext = require('./src/createContext')
 
 module.exports = {
   run: function ( script, callback ) {
@@ -29,27 +30,46 @@ module.exports = {
 
     // monkey patch async stuff. TODO literally everything else besides setTimeout
     var pending = 0;
+    var timeouts = {};
+    var intervals = {};
 
-    var setTimeout = global.setTimeout;
-    global.setTimeout = function ( fn, delay ) {
-      pending += 1;
-      return setTimeout( function () {
-        fn();
-        if ( !--pending ) callback( result );
-      }, delay );
+    function check () {
+      if (!--pending) callback(display_calls);
     }
 
-    var result = '';
-
-    global.display = function ( uid, data ) {
-      display_calls[ uid ].results.push(data);
-    };
-
-    var context = vm.createContext({
+    var context = createContext({
+      require: function ( mod ) {
+        return require(mod); // TODO – resolve relative to the actual file, not nodebooks itself
+      },
       display: function ( uid, data ) {
         display_calls[ uid ].results.push(data);
       },
-      require: require
+      setTimeout: function ( fn, delay ) {
+        pending += 1;
+        var id = setTimeout( function () {
+          timeouts[id] = null;
+          fn();
+          check();
+        }, delay );
+        timeouts[id] = true;
+        return id;
+      },
+      clearTimeout: function ( id ) {
+        if (timeouts[id]) check();
+        timeouts[id] = null;
+        clearTimeout(id);
+      },
+      setInterval: function ( fn, interval ) {
+        pending += 1;
+        var id = setInterval( fn, interval );
+        intervals[id] = true;
+        return id;
+      },
+      clearInterval: function ( id ) {
+        if (intervals[id]) check();
+        intervals[id] = null;
+        clearInterval(id);
+      }
     });
 
     vm.runInContext(magicString.toString(), context)

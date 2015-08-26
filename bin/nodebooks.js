@@ -58,7 +58,6 @@ var page_formats = {
       compileStylus(null, function(err, css){
         var doc = createDocWithCss(css)
         var markup = serializeDocument(doc)
-        console.log(blocks.join('\n'))
 
         markup = markup.replace('<body>','<body>' + blocks.join('\n'))
 

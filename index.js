@@ -2,6 +2,8 @@ var io = require('indian-ocean')
 
 var data = io.readDataSync('data/test.csv')
 
+var display = global.display || function(){}
+
 var numbs = [1,2,3]
 
 display(data)

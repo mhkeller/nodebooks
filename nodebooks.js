@@ -1,47 +1,61 @@
 var acorn = require('acorn')
 var _ = require('underscore')
 var fs = require('fs')
+var MagicString = require('magic-string')
+var walk = require('estree-walker').walk
+var vm = require('vm')
 
-// Keep track of the data values
-var peeks = []
+module.exports = {
+  run: function ( script, callback ) {
+    var magicString = new MagicString(script)
+    var tree = acorn.parse(script, {locations: true})
 
-// Read in our script and parse it
-var script = fs.readFileSync('./index.js', 'utf-8')
-var tree = acorn.parse(script, {locations: true})
+    // Instrument display calls
+    var display_calls = {};
+    var uid = 0;
+    walk(tree, {
+      enter: function (node) {
+        if (node.type === 'CallExpression' && node.callee.name === 'display') {
+          display_calls[ uid ] = {
+            line: node.loc.end.line,
+            results: []
+          };
 
-// How many calls to the `display` function do we have?
-var display_calls = tree.body.filter(function(obj){
-    return obj.type == 'ExpressionStatement' && obj.expression.callee.name == 'display'
-  })
+          magicString.insert(node.arguments[0].start, '' + uid + ', ');
+          uid += 1;
+        }
+      }
+    });
 
-var numb_display_calls = display_calls.length
+    // monkey patch async stuff. TODO literally everything else besides setTimeout
+    var pending = 0;
 
-var showPeeks_after = _.after(numb_display_calls, showPeeks)
-
-var script_lines = script.split('\n')
-
-// Starting from the bottom, work backwards inserting our stringified data in the line after the calls to `display`
-// Find out which one to display based on its index
-function showPeeks(){
-  for (var i = display_calls.length - 1; i >= 0; i--) {
-    var display_call = display_calls[i]
-    var script_line_index = display_call.loc.end.line - 1
-    var associated_peek = '````\n\nValue is: ' + JSON.stringify(peeks[i]) + '\n\n' // insert transformation step, simply stringify for now
-    
-    // Some quick and dirty markdown formatting that would need to be improved to handle more use cases
-    if (i < display_calls.length - 1) {
-      associated_peek += '````js'
+    var setTimeout = global.setTimeout;
+    global.setTimeout = function ( fn, delay ) {
+      pending += 1;
+      return setTimeout( function () {
+        fn();
+        if ( !--pending ) callback( result );
+      }, delay );
     }
-    
-    script_lines.splice(script_line_index + 1, 0, associated_peek)
+
+    var result = '';
+
+    global.display = function ( uid, data ) {
+      display_calls[ uid ].results.push(data);
+    };
+
+    var context = vm.createContext({
+      display: function ( uid, data ) {
+        display_calls[ uid ].results.push(data);
+      },
+      require: require
+    });
+
+    vm.runInContext(magicString.toString(), context)
+
+    if ( !pending ) {
+      callback(display_calls);
+    }
   }
-
-  fs.writeFileSync('nodebook.md', '````js\n'+script_lines.join('\n'))
 }
-
-function keepTrack(obj) {
-  peeks.push(obj)
-  showPeeks_after()
-}
-
-module.exports = keepTrack

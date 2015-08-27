@@ -19,8 +19,7 @@ module.exports = {
         if (node.type === 'CallExpression' && node.callee.name === 'display') {
           display_calls[ uid ] = {
             line: node.loc.end.line,
-            results: [],
-            format: 'js'
+            results: []
           };
 
           magicString.insert(node.arguments[0].start, '' + uid + ', ');
@@ -43,9 +42,7 @@ module.exports = {
         return require(mod); // TODO – resolve relative to the actual file, not nodebooks itself
       },
       display: function ( uid, data, format ) {
-        if (format) {
-          display_calls[ uid ].format = format;
-        }
+        display_calls[ uid ].format = format || 'js'
         display_calls[ uid ].results.push(JSON.stringify(data));
       },
       setTimeout: function ( fn, delay ) {

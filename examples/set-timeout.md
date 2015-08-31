@@ -1,6 +1,7 @@
 ````js
 var io = require('indian-ocean')
-require('../src/nodebooks.js').sanitize()
+
+require('../src/nodebooks.js').nodeSafe()
 
 var data = io.readDataSync('./examples/data/test.csv')
 
@@ -77,9 +78,9 @@ var interval = setInterval( function () {
 ````
 
 
-[0]: "the time is Mon Aug 31 2015 02:00:18 GMT-0400 (EDT)"
-[1]: "the time is Mon Aug 31 2015 02:00:19 GMT-0400 (EDT)"
-[2]: "the time is Mon Aug 31 2015 02:00:20 GMT-0400 (EDT)"
+[0]: "the time is Mon Aug 31 2015 02:03:47 GMT-0400 (EDT)"
+[1]: "the time is Mon Aug 31 2015 02:03:48 GMT-0400 (EDT)"
+[2]: "the time is Mon Aug 31 2015 02:03:49 GMT-0400 (EDT)"
 
 
 ````js

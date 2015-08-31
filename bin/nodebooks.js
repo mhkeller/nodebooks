@@ -8,7 +8,8 @@ var serializeDocument = jsdom.serializeDocument
 var compileStylus = require('../utils/compile-stylus')
 
 var file = process.argv[2]
-console.log( file )
+// var page_format_arg = process.argv['f']
+// console.log( process.argv )
 
 var page_formats = {
   md: {
@@ -68,7 +69,7 @@ var page_formats = {
   }
 }
 
-var page_format = page_formats['html']
+var page_format = page_formats['md']
 
 function formatPeek ( peek, pageFormat ) {
   return peek.results.map( function ( result, i ) {

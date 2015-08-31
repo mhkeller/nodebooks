@@ -16,7 +16,7 @@ module.exports = {
     var uid = 0;
     walk(tree, {
       enter: function (node) {
-        if (node.type === 'CallExpression' && node.callee.name === 'display') {
+        if (node.type === 'CallExpression' && /^__/.test(node.callee.name)) {
           display_calls[ uid ] = {
             line: node.loc.end.line,
             results: []
@@ -41,7 +41,7 @@ module.exports = {
       require: function ( mod ) {
         return require(mod); // TODO – resolve relative to the actual file, not nodebooks itself
       },
-      display: function ( uid, data, format ) {
+      __: function ( uid, data, format ) {
         display_calls[ uid ].format = format || 'js'
         display_calls[ uid ].results.push(JSON.stringify(data));
       },

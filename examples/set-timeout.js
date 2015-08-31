@@ -1,32 +1,34 @@
 var io = require('indian-ocean')
 
-var data = io.readDataSync('data/test.csv')
+var data = io.readDataSync('./examples/data/test.csv')
 
-var display = global.display || function(){}
+if (typeof __ === 'undefined') {
+  __ = console.log()
+}
 
 var numbs = [1,2,3]
 
-display(data)
-display(numbs)
+__(data)
+__(numbs)
 
 numbs.forEach(function (num) {
-	display(num*num);
+  __(num*num);
 });
 
 setTimeout( function () {
-	display('it works!');
+  __('it works!');
 }, 1000 );
 
 var id = setTimeout( function () {
-	display( 'this should not be displayed' );
+  __( 'this should not be displayed' );
 }, 2000 );
 
 clearTimeout( id );
 
 var interval = setInterval( function () {
-	display( 'the time is ' + new Date().toString() );
+  __( 'the time is ' + new Date().toString() );
 }, 1000 );
 
 setTimeout( function () {
-	clearInterval( interval );
+  clearInterval( interval );
 }, 3500 );

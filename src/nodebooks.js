@@ -4,9 +4,16 @@ var fs = require('fs')
 var MagicString = require('magic-string')
 var walk = require('estree-walker').walk
 var vm = require('vm')
-var createContext = require('./src/createContext')
+var createContext = require('./createContext')
 
 module.exports = {
+
+  nodeSafe: function(){
+    if (typeof __ === 'undefined') {
+      __ = console.log
+    }
+  },
+
   run: function ( script, callback ) {
     var magicString = new MagicString(script)
     var tree = acorn.parse(script, {locations: true})

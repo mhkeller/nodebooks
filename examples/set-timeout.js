@@ -1,10 +1,8 @@
 var io = require('indian-ocean')
 
-var data = io.readDataSync('./examples/data/test.csv')
+require('../src/nodebooks.js').nodeSafe()
 
-if (typeof __ === 'undefined') {
-  __ = console.log()
-}
+var data = io.readDataSync('./examples/data/test.csv')
 
 var numbs = [1,2,3]
 

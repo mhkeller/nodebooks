@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var fs = require('fs')
-var nodebooks = require('../nodebooks')
+var nodebooks = require('../src/nodebooks')
 var formats = require('../utils/formats')
 var jsdom = require('jsdom')
 var serializeDocument = jsdom.serializeDocument

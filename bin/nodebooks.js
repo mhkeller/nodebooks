@@ -104,7 +104,7 @@ nodebooks.run(code, function (result) {
   var blocks = [];
   var nextPeek = peeks.shift();
   var i;
-  for ( i = 0; i < lines.length; i += 1 ) {
+  for ( i = 0; i <= lines.length; i += 1 ) {
     if ( !nextPeek || i < nextPeek.line ) {
       block.push( lines[i] );
     } else {

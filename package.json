@@ -2,7 +2,7 @@
   "name": "nodebooks",
   "version": "0.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/nodebooks.js",
   "bin": {
     "nodebooks": "./bin/nodebooks.js"
   },
